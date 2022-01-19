@@ -1,3 +1,11 @@
+# Reinclude the app firmaware file (for OTA updates)
 build/*
+!hid_control_wifi_receiver.bin
+
+# Reinclude bootloader.bin in build/bootloader/
+!build/bootloader
+build/bootloader/*
+!build/bootloader/bootloader.bin
+
 #sdkconfig
 #sdkconfig.old
