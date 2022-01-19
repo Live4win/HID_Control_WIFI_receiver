@@ -1,0 +1,9 @@
+{
+    "cmake.configureOnOpen": false,
+    "idf.flashType": "UART",
+    "idf.portWin": "COM6",
+    "files.associations": {
+        "io_hardware.h": "c"
+    },
+    "idf.adapterTargetName": "esp32"
+}
