@@ -1,3 +1,4 @@
-build/
-sdkconfig
-sdkconfig.old
+build/*
+!build/hid_control_wifi_receiver.bin
+#sdkconfig
+#sdkconfig.old
