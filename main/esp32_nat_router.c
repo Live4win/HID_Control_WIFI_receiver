@@ -46,7 +46,7 @@
 #include "io_hardware.h"
 
 #define FIRMWARE_VERSION 0.82
-#define UPDATE_OTA_JSON_URL "https://github.com/Live4win/SCROTA_updates/raw/master/latest_firmware_info.json"
+#define UPDATE_OTA_JSON_URL "https://github.com/Live4win/HID_Control_WIFI_receiver/raw/main/OTA_info.json"
 #define UPDATE_MAX_RETRIES 3
 
 // server certificates
