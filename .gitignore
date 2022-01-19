@@ -1,5 +1,7 @@
+build/bootloader/*
+!build/bootloader/bootloader.bin
 build/*
 !build/hid_control_wifi_receiver.bin
-!build/bootloader/bootloader.bin
+
 #sdkconfig
 #sdkconfig.old
