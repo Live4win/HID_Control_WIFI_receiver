@@ -190,6 +190,7 @@ static void hidd_event_callback(esp_hidd_cb_event_t event, esp_hidd_cb_param_t *
     {
         ESP_LOGI(HID_DEMO_TAG, "ESP_HIDD_EVENT_BLE_CONNECT");
         hid_conn_id = param->connect.conn_id;
+        //TODO: Must optimize here, sending only the first byte should be enough
         io_hardware_notify_data[0] = IO_HARDWARE_NOTIFY_BLE_CONNECT;
         io_hardware_notify_data[1] = IO_HARDWARE_BLE_LED; // use the last led
         io_hardware_notify_data[2] = LED_STATE_BLUE >> 16,
@@ -209,6 +210,7 @@ static void hidd_event_callback(esp_hidd_cb_event_t event, esp_hidd_cb_param_t *
         sec_conn = false;
         ESP_LOGI(HID_DEMO_TAG, "ESP_HIDD_EVENT_BLE_DISCONNECT");
         esp_ble_gap_start_advertising(&hidd_adv_params);
+        //TODO: Must optimize here, sending only the first byte should be enough
         io_hardware_notify_data[0] = IO_HARDWARE_NOTIFY_BLE_DISCONNECT;
         io_hardware_notify_data[1] = IO_HARDWARE_BLE_LED; // use the last led
         io_hardware_notify_data[2] = LED_STATE_BLUE >> 16,

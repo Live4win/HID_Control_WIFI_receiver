@@ -40,6 +40,7 @@
 
 static xQueueHandle gpio_evt_queue = NULL;
 
+//TODO: Must optimize here, only the first byte should be enough
 uint8_t io_hardware_notify_data[5] = {0x00, 0x00, 0x00, 0x00, 0x00};
 
 spi_device_handle_t spi;
