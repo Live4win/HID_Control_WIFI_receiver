@@ -3,7 +3,9 @@
     "idf.flashType": "UART",
     "idf.portWin": "COM6",
     "files.associations": {
-        "io_hardware.h": "c"
+        "io_hardware.h": "c",
+        "esp_bt_device.h": "c",
+        "hid_app_control.h": "c"
     },
     "idf.adapterTargetName": "esp32"
 }

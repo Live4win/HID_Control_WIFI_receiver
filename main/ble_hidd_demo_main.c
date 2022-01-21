@@ -51,7 +51,7 @@
  * if you got `GATT_INSUF_ENCRYPTION` error, please ignore.
  */
 
-#define HID_DEMO_TAG "HID_DEMO"
+#define HID_DEMO_TAG "HID_TASK"
 
 static uint16_t hid_conn_id = 0;
 static bool sec_conn = false;
@@ -312,7 +312,7 @@ void hid_demo_task(void *pvParameters)
                 if (button_inputs[i][1] == 1)
                 { // if a specific button is pressed
                     user_command_selection = (app_control_io_hardware_scripts[user_app_selection][i][1]);
-                    i = 3; // end the for loop
+                    i = GPIO_INPUT_NUMBER; // end the for loop
                     command_selected = 1;
                     printf("Command Found!\n");
                 }
@@ -337,6 +337,8 @@ void hid_demo_task(void *pvParameters)
                 printf("Special Action Detected!\n");
                 key_value = app_control_registered[user_app_selection]
                                 ->scripts[user_command_selection][i + 1]; // get the special function index
+                app_control_special_actions[user_app_selection][key_value].host_script = app_control_registered[user_app_selection]
+                                                                                             ->scripts[user_command_selection];
                 app_control_special_actions[user_app_selection][key_value].hid_conn_id = hid_conn_id;
                 app_control_special_actions[user_app_selection][key_value]
                     .pfunction(&app_control_special_actions[user_app_selection][key_value]);
