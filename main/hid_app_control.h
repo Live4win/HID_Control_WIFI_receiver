@@ -59,8 +59,13 @@ extern "C"
 #define CONTROL_SCRIPTS_SPECIAL_ACTIONS_TOTAL \
     ZOOM_CONTROL_MOBILE_SPECIAL_ACTIONS + ZOOM_CONTROL_PC_SPECIAL_ACTIONS + SKYPE_CONTROL_MOBILE_SPECIAL_ACTIONS + SKYPE_CONTROL_PC_SPECIAL_ACTIONS
 
-#define NO_ACTION 0
-#define SPECIAL_ACTION 232
+#define ACTION_NONE 0
+#define ACTION_SPECIAL 232
+#define ACTION_COMBINE_KEYS_BASE_CODE 240
+    // 'n' must not be higher than 9
+#define ACTION_COMBINE_NEXT_KEYS(n) ((n < 2 || n > 9)  \
+                                         ? ACTION_NONE \
+                                         : ACTION_COMBINE_KEYS_BASE_CODE + n)
 
 #define ZOOM_CONTROL_MOBILE_SPECIAL_1 0
 #define CONTROL_PC_SPECIAL_KEY_COMBINATION 1
@@ -72,12 +77,12 @@ extern "C"
         HID_KEY_DOWN_ARROW,                   \
         HID_KEY_SPACEBAR,                     \
         HID_KEY_ESCAPE,                       \
-        NO_ACTION,                            \
-        NO_ACTION,                            \
-        NO_ACTION,                            \
-        NO_ACTION,                            \
-        NO_ACTION,                            \
-        NO_ACTION
+        ACTION_NONE,                          \
+        ACTION_NONE,                          \
+        ACTION_NONE,                          \
+        ACTION_NONE,                          \
+        ACTION_NONE,                          \
+        ACTION_NONE
 
 #define ZOOM_CONTROL_MOBILE_TOGGLE_VID_SCRIPT \
     ZOOM_CONTROL_MOBILE_TOGGLE_VID,           \
@@ -86,251 +91,251 @@ extern "C"
         HID_KEY_RIGHT_ARROW,                  \
         HID_KEY_SPACEBAR,                     \
         HID_KEY_ESCAPE,                       \
-        NO_ACTION,                            \
-        NO_ACTION,                            \
-        NO_ACTION,                            \
-        NO_ACTION,                            \
-        NO_ACTION
+        ACTION_NONE,                          \
+        ACTION_NONE,                          \
+        ACTION_NONE,                          \
+        ACTION_NONE,                          \
+        ACTION_NONE
 
 #define ZOOM_CONTROL_MOBILE_JOIN1_SCRIPT \
     ZOOM_CONTROL_MOBILE_JOIN1,           \
-        SPECIAL_ACTION,                  \
+        ACTION_SPECIAL,                  \
         ZOOM_CONTROL_MOBILE_SPECIAL_1,   \
-        NO_ACTION,                       \
-        NO_ACTION,                       \
-        NO_ACTION,                       \
-        NO_ACTION,                       \
-        NO_ACTION,                       \
-        NO_ACTION,                       \
-        NO_ACTION,                       \
-        NO_ACTION
+        ACTION_NONE,                     \
+        ACTION_NONE,                     \
+        ACTION_NONE,                     \
+        ACTION_NONE,                     \
+        ACTION_NONE,                     \
+        ACTION_NONE,                     \
+        ACTION_NONE,                     \
+        ACTION_NONE
 
 // THIS SCRIPT BELOW WILL PROBABLY GET SUBSTITUTED BY
 // A SCRIPT THAT GOES 'BACK TO THE MEETING' IF THE
 // USER IS ON THE ZOOM START PAGE
 #define ZOOM_CONTROL_MOBILE_OPEN_APP_SCRIPT \
     ZOOM_CONTROL_MOBILE_OPEN_APP,           \
-        NO_ACTION,                          \
-        NO_ACTION,                          \
-        NO_ACTION,                          \
-        NO_ACTION,                          \
-        NO_ACTION,                          \
-        NO_ACTION,                          \
-        NO_ACTION,                          \
-        NO_ACTION,                          \
-        NO_ACTION,                          \
-        NO_ACTION
+        ACTION_NONE,                        \
+        ACTION_NONE,                        \
+        ACTION_NONE,                        \
+        ACTION_NONE,                        \
+        ACTION_NONE,                        \
+        ACTION_NONE,                        \
+        ACTION_NONE,                        \
+        ACTION_NONE,                        \
+        ACTION_NONE,                        \
+        ACTION_NONE
 
 #define ZOOM_CONTROL_MOBILE_STILL_DECIDING_SCRIPT \
     ZOOM_CONTROL_MOBILE_STILL_DECIDING,           \
-        NO_ACTION,                                \
-        NO_ACTION,                                \
-        NO_ACTION,                                \
-        NO_ACTION,                                \
-        NO_ACTION,                                \
-        NO_ACTION,                                \
-        NO_ACTION,                                \
-        NO_ACTION,                                \
-        NO_ACTION,                                \
-        NO_ACTION
+        ACTION_NONE,                              \
+        ACTION_NONE,                              \
+        ACTION_NONE,                              \
+        ACTION_NONE,                              \
+        ACTION_NONE,                              \
+        ACTION_NONE,                              \
+        ACTION_NONE,                              \
+        ACTION_NONE,                              \
+        ACTION_NONE,                              \
+        ACTION_NONE
 
 // Zoom for PC scripts
 #define ZOOM_CONTROL_PC_TOGGLE_MIC_SCRIPT \
     ZOOM_CONTROL_PC_TOGGLE_MIC,           \
-        NO_ACTION,                        \
-        NO_ACTION,                        \
-        NO_ACTION,                        \
-        NO_ACTION,                        \
-        NO_ACTION,                        \
-        NO_ACTION,                        \
-        NO_ACTION,                        \
-        NO_ACTION,                        \
-        NO_ACTION,                        \
-        NO_ACTION
+        ACTION_COMBINE_NEXT_KEYS(2),      \
+        HID_KEY_LEFT_ALT,                 \
+        HID_KEY_A,                        \
+        ACTION_NONE,                      \
+        ACTION_NONE,                      \
+        ACTION_NONE,                      \
+        ACTION_NONE,                      \
+        ACTION_NONE,                      \
+        ACTION_NONE,                      \
+        ACTION_NONE
 
 #define ZOOM_CONTROL_PC_TOGGLE_VID_SCRIPT \
     ZOOM_CONTROL_PC_TOGGLE_VID,           \
-        NO_ACTION,                        \
-        NO_ACTION,                        \
-        NO_ACTION,                        \
-        NO_ACTION,                        \
-        NO_ACTION,                        \
-        NO_ACTION,                        \
-        NO_ACTION,                        \
-        NO_ACTION,                        \
-        NO_ACTION,                        \
-        NO_ACTION
+        ACTION_NONE,                      \
+        ACTION_NONE,                      \
+        ACTION_NONE,                      \
+        ACTION_NONE,                      \
+        ACTION_NONE,                      \
+        ACTION_NONE,                      \
+        ACTION_NONE,                      \
+        ACTION_NONE,                      \
+        ACTION_NONE,                      \
+        ACTION_NONE
 
 #define ZOOM_CONTROL_PC_IMPROV_VID_SCRIPT \
     ZOOM_CONTROL_PC_IMPROV_VID,           \
-        NO_ACTION,                        \
-        NO_ACTION,                        \
-        NO_ACTION,                        \
-        NO_ACTION,                        \
-        NO_ACTION,                        \
-        NO_ACTION,                        \
-        NO_ACTION,                        \
-        NO_ACTION,                        \
-        NO_ACTION,                        \
-        NO_ACTION
+        ACTION_NONE,                      \
+        ACTION_NONE,                      \
+        ACTION_NONE,                      \
+        ACTION_NONE,                      \
+        ACTION_NONE,                      \
+        ACTION_NONE,                      \
+        ACTION_NONE,                      \
+        ACTION_NONE,                      \
+        ACTION_NONE,                      \
+        ACTION_NONE
 
 #define ZOOM_CONTROL_PC_OPEN_APP_SCRIPT \
     ZOOM_CONTROL_PC_OPEN_APP,           \
-        NO_ACTION,                      \
-        NO_ACTION,                      \
-        NO_ACTION,                      \
-        NO_ACTION,                      \
-        NO_ACTION,                      \
-        NO_ACTION,                      \
-        NO_ACTION,                      \
-        NO_ACTION,                      \
-        NO_ACTION,                      \
-        NO_ACTION
+        ACTION_NONE,                    \
+        ACTION_NONE,                    \
+        ACTION_NONE,                    \
+        ACTION_NONE,                    \
+        ACTION_NONE,                    \
+        ACTION_NONE,                    \
+        ACTION_NONE,                    \
+        ACTION_NONE,                    \
+        ACTION_NONE,                    \
+        ACTION_NONE
 
 #define ZOOM_CONTROL_PC_STILL_DECIDING_SCRIPT \
     ZOOM_CONTROL_PC_STILL_DECIDING,           \
-        NO_ACTION,                            \
-        NO_ACTION,                            \
-        NO_ACTION,                            \
-        NO_ACTION,                            \
-        NO_ACTION,                            \
-        NO_ACTION,                            \
-        NO_ACTION,                            \
-        NO_ACTION,                            \
-        NO_ACTION,                            \
-        NO_ACTION
+        ACTION_NONE,                          \
+        ACTION_NONE,                          \
+        ACTION_NONE,                          \
+        ACTION_NONE,                          \
+        ACTION_NONE,                          \
+        ACTION_NONE,                          \
+        ACTION_NONE,                          \
+        ACTION_NONE,                          \
+        ACTION_NONE,                          \
+        ACTION_NONE
 
 // Skype for mobile scripts
 #define SKYPE_CONTROL_MOBILE_TOGGLE_MIC_SCRIPT \
     SKYPE_CONTROL_MOBILE_TOGGLE_MIC,           \
-        NO_ACTION,                             \
-        NO_ACTION,                             \
-        NO_ACTION,                             \
-        NO_ACTION,                             \
-        NO_ACTION,                             \
-        NO_ACTION,                             \
-        NO_ACTION,                             \
-        NO_ACTION,                             \
-        NO_ACTION,                             \
-        NO_ACTION
+        ACTION_NONE,                           \
+        ACTION_NONE,                           \
+        ACTION_NONE,                           \
+        ACTION_NONE,                           \
+        ACTION_NONE,                           \
+        ACTION_NONE,                           \
+        ACTION_NONE,                           \
+        ACTION_NONE,                           \
+        ACTION_NONE,                           \
+        ACTION_NONE
 
 #define SKYPE_CONTROL_MOBILE_TOGGLE_VID_SCRIPT \
     SKYPE_CONTROL_MOBILE_TOGGLE_VID,           \
-        NO_ACTION,                             \
-        NO_ACTION,                             \
-        NO_ACTION,                             \
-        NO_ACTION,                             \
-        NO_ACTION,                             \
-        NO_ACTION,                             \
-        NO_ACTION,                             \
-        NO_ACTION,                             \
-        NO_ACTION,                             \
-        NO_ACTION
+        ACTION_NONE,                           \
+        ACTION_NONE,                           \
+        ACTION_NONE,                           \
+        ACTION_NONE,                           \
+        ACTION_NONE,                           \
+        ACTION_NONE,                           \
+        ACTION_NONE,                           \
+        ACTION_NONE,                           \
+        ACTION_NONE,                           \
+        ACTION_NONE
 
 #define SKYPE_CONTROL_MOBILE_IMPROV_VID_SCRIPT \
     SKYPE_CONTROL_MOBILE_IMPROV_VID,           \
-        NO_ACTION,                             \
-        NO_ACTION,                             \
-        NO_ACTION,                             \
-        NO_ACTION,                             \
-        NO_ACTION,                             \
-        NO_ACTION,                             \
-        NO_ACTION,                             \
-        NO_ACTION,                             \
-        NO_ACTION,                             \
-        NO_ACTION
+        ACTION_NONE,                           \
+        ACTION_NONE,                           \
+        ACTION_NONE,                           \
+        ACTION_NONE,                           \
+        ACTION_NONE,                           \
+        ACTION_NONE,                           \
+        ACTION_NONE,                           \
+        ACTION_NONE,                           \
+        ACTION_NONE,                           \
+        ACTION_NONE
 
 #define SKYPE_CONTROL_MOBILE_OPEN_APP_SCRIPT \
     SKYPE_CONTROL_MOBILE_OPEN_APP,           \
-        NO_ACTION,                           \
-        NO_ACTION,                           \
-        NO_ACTION,                           \
-        NO_ACTION,                           \
-        NO_ACTION,                           \
-        NO_ACTION,                           \
-        NO_ACTION,                           \
-        NO_ACTION,                           \
-        NO_ACTION,                           \
-        NO_ACTION
+        ACTION_NONE,                         \
+        ACTION_NONE,                         \
+        ACTION_NONE,                         \
+        ACTION_NONE,                         \
+        ACTION_NONE,                         \
+        ACTION_NONE,                         \
+        ACTION_NONE,                         \
+        ACTION_NONE,                         \
+        ACTION_NONE,                         \
+        ACTION_NONE
 
 #define SKYPE_CONTROL_MOBILE_STILL_DECIDING_SCRIPT \
     SKYPE_CONTROL_MOBILE_STILL_DECIDING,           \
-        NO_ACTION,                                 \
-        NO_ACTION,                                 \
-        NO_ACTION,                                 \
-        NO_ACTION,                                 \
-        NO_ACTION,                                 \
-        NO_ACTION,                                 \
-        NO_ACTION,                                 \
-        NO_ACTION,                                 \
-        NO_ACTION,                                 \
-        NO_ACTION
+        ACTION_NONE,                               \
+        ACTION_NONE,                               \
+        ACTION_NONE,                               \
+        ACTION_NONE,                               \
+        ACTION_NONE,                               \
+        ACTION_NONE,                               \
+        ACTION_NONE,                               \
+        ACTION_NONE,                               \
+        ACTION_NONE,                               \
+        ACTION_NONE
 
 // Skype for PC scripts
 #define SKYPE_CONTROL_PC_TOGGLE_MIC_SCRIPT \
     SKYPE_CONTROL_PC_TOGGLE_MIC,           \
-        NO_ACTION,                         \
-        NO_ACTION,                         \
-        NO_ACTION,                         \
-        NO_ACTION,                         \
-        NO_ACTION,                         \
-        NO_ACTION,                         \
-        NO_ACTION,                         \
-        NO_ACTION,                         \
-        NO_ACTION,                         \
-        NO_ACTION
+        ACTION_NONE,                       \
+        ACTION_NONE,                       \
+        ACTION_NONE,                       \
+        ACTION_NONE,                       \
+        ACTION_NONE,                       \
+        ACTION_NONE,                       \
+        ACTION_NONE,                       \
+        ACTION_NONE,                       \
+        ACTION_NONE,                       \
+        ACTION_NONE
 
 #define SKYPE_CONTROL_PC_TOGGLE_VID_SCRIPT \
     SKYPE_CONTROL_PC_TOGGLE_VID,           \
-        NO_ACTION,                         \
-        NO_ACTION,                         \
-        NO_ACTION,                         \
-        NO_ACTION,                         \
-        NO_ACTION,                         \
-        NO_ACTION,                         \
-        NO_ACTION,                         \
-        NO_ACTION,                         \
-        NO_ACTION,                         \
-        NO_ACTION
+        ACTION_NONE,                       \
+        ACTION_NONE,                       \
+        ACTION_NONE,                       \
+        ACTION_NONE,                       \
+        ACTION_NONE,                       \
+        ACTION_NONE,                       \
+        ACTION_NONE,                       \
+        ACTION_NONE,                       \
+        ACTION_NONE,                       \
+        ACTION_NONE
 
 #define SKYPE_CONTROL_PC_IMPROV_VID_SCRIPT \
     SKYPE_CONTROL_PC_IMPROV_VID,           \
-        NO_ACTION,                         \
-        NO_ACTION,                         \
-        NO_ACTION,                         \
-        NO_ACTION,                         \
-        NO_ACTION,                         \
-        NO_ACTION,                         \
-        NO_ACTION,                         \
-        NO_ACTION,                         \
-        NO_ACTION,                         \
-        NO_ACTION
+        ACTION_NONE,                       \
+        ACTION_NONE,                       \
+        ACTION_NONE,                       \
+        ACTION_NONE,                       \
+        ACTION_NONE,                       \
+        ACTION_NONE,                       \
+        ACTION_NONE,                       \
+        ACTION_NONE,                       \
+        ACTION_NONE,                       \
+        ACTION_NONE
 
 #define SKYPE_CONTROL_PC_OPEN_APP_SCRIPT \
     SKYPE_CONTROL_PC_OPEN_APP,           \
-        NO_ACTION,                       \
-        NO_ACTION,                       \
-        NO_ACTION,                       \
-        NO_ACTION,                       \
-        NO_ACTION,                       \
-        NO_ACTION,                       \
-        NO_ACTION,                       \
-        NO_ACTION,                       \
-        NO_ACTION,                       \
-        NO_ACTION
+        ACTION_NONE,                     \
+        ACTION_NONE,                     \
+        ACTION_NONE,                     \
+        ACTION_NONE,                     \
+        ACTION_NONE,                     \
+        ACTION_NONE,                     \
+        ACTION_NONE,                     \
+        ACTION_NONE,                     \
+        ACTION_NONE,                     \
+        ACTION_NONE
 
 #define SKYPE_CONTROL_PC_STILL_DECIDING_SCRIPT \
     SKYPE_CONTROL_PC_STILL_DECIDING,           \
-        NO_ACTION,                             \
-        NO_ACTION,                             \
-        NO_ACTION,                             \
-        NO_ACTION,                             \
-        NO_ACTION,                             \
-        NO_ACTION,                             \
-        NO_ACTION,                             \
-        NO_ACTION,                             \
-        NO_ACTION,                             \
-        NO_ACTION
+        ACTION_NONE,                           \
+        ACTION_NONE,                           \
+        ACTION_NONE,                           \
+        ACTION_NONE,                           \
+        ACTION_NONE,                           \
+        ACTION_NONE,                           \
+        ACTION_NONE,                           \
+        ACTION_NONE,                           \
+        ACTION_NONE,                           \
+        ACTION_NONE
 
 // test defines..
 #define MEETING1_ID "12345670"

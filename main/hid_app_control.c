@@ -51,24 +51,20 @@ static app_control_special_script_t
              .arg1 = (uint8_t *)MEETING1_ID,
              .arg2 = (uint8_t *)MEETING1_PASSCODE}};
 
-static app_control_special_script_t zoom_pc_special_scripts[ZOOM_CONTROL_PC_SPECIAL_ACTIONS] = {
-    {.pfunction = (void *)send_keyboard_shortcut,
-     .arg1 = 123,
-     .arg2 = 456,
-     .returnCode = {[0] = 0xff, [1] = 0xff, [2] = 0xff}}};
+//static app_control_special_script_t zoom_pc_special_scripts[ZOOM_CONTROL_PC_SPECIAL_ACTIONS];
 
 // registering the special scripts of zoom mobile only
 app_control_special_script_t *
     app_control_special_actions[CONTROL_SCRIPTS_SPECIAL_ACTIONS_TOTAL] = {
         (void *)&zoom_mobile_special_scripts, // zoom mobile
-        (void *)&zoom_pc_special_scripts,     // zoom pc
+                                              //(void *)&zoom_pc_special_scripts,     // zoom pc
 };
 
 // LOCAL FUNCTION DEFINITIONS
 
 static void type_and_connect_meeting(void *pData)
 {
-
+    uint8_t returnCode = SPECIAL_ACTION_RETURN_CODE_OK;
     app_control_special_script_t *received = (app_control_special_script_t *)pData;
 
     uint16_t hid_id = (uint16_t)received->hid_conn_id;
@@ -86,11 +82,12 @@ static void type_and_connect_meeting(void *pData)
     free(meeting_id);
     free(meeting_passcode);
 
-    received->returnCode = ;
+    received->returnCode = returnCode;
 }
 
 static void type_and_connect_meeting2(void *pData)
 {
+    uint8_t returnCode = SPECIAL_ACTION_RETURN_CODE_OK;
 
     app_control_special_script_t *received = (app_control_special_script_t *)pData;
 
@@ -99,6 +96,8 @@ static void type_and_connect_meeting2(void *pData)
 
     printf("%s, %s\n", meeting_id, meeting_passcode);
     printf("DoSFDSDFSDFSne!\n");
+
+    received->returnCode = returnCode;
 }
 
 // zoom pc special scripts functions

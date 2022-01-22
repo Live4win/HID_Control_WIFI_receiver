@@ -320,20 +320,20 @@ void hid_demo_task(void *pvParameters)
         }
 
         uint8_t key_value = 0;
+        uint8_t key_combo_flag = 1; // 1 must be the default value
 
         for (i = 1;
              i < app_control_registered[user_app_selection]->scripts_max_steps;
              i++)
         {
-
-            switch (app_control_registered[user_app_selection]->scripts[user_command_selection][i])
+            key_value = app_control_registered[user_app_selection]->scripts[user_command_selection][i];
+            switch (key_value)
             {
-
-            case NO_ACTION:
+            case ACTION_NONE:
                 i = app_control_registered[user_app_selection]->scripts_max_steps;
                 break;
 
-            case SPECIAL_ACTION:
+            case ACTION_SPECIAL:
                 printf("Special Action Detected!\n");
                 key_value = app_control_registered[user_app_selection]
                                 ->scripts[user_command_selection][i + 1]; // get the special function index
@@ -342,11 +342,48 @@ void hid_demo_task(void *pvParameters)
                 app_control_special_actions[user_app_selection][key_value].hid_conn_id = hid_conn_id;
                 app_control_special_actions[user_app_selection][key_value]
                     .pfunction(&app_control_special_actions[user_app_selection][key_value]);
+
+                // TODO: CHECK RETURN CODE HERE IN ORDER TO SET i VALUE IF NECESSARY
+                // TODO: fix the retreival of the return code here
+                switch (app_control_special_actions[user_app_selection][key_value].returnCode[0])
+                {
+                case SPECIAL_ACTION_RETURN_CODE_END_SCRIPT:
+                    i = app_control_registered[user_app_selection]->scripts_max_steps;
+                    break;
+                case SPECIAL_ACTION_RETURN_CODE_FAIL:
+                    i = app_control_registered[user_app_selection]->scripts_max_steps;
+                    break;
+                case SPECIAL_ACTION_RETURN_CODE_SKIP_NEXT:
+                    break;
+                default:
+                    break;
+                }
+
                 break;
 
             default:
+
                 printf("Executing command\n");
-                key_value = app_control_registered[user_app_selection]->scripts[user_command_selection][i];
+
+                if ((int)(key_value / 10) == (ACTION_COMBINE_KEYS_BASE_CODE / 10))
+                {
+                    i++;
+                    for (int kj = 0; kj < 2; kj++)
+                    {
+                        for (int j = 0; j < (key_value - ACTION_COMBINE_KEYS_BASE_CODE); j++)
+                        {
+                            esp_hidd_send_keyboard_value(
+                                hid_conn_id, 0,
+                                app_control_registered[user_app_selection]->scripts[user_command_selection][i + j], key_combo_flag);
+                            vTaskDelay(100 / portTICK_PERIOD_MS);
+                        }
+                        key_combo_flag = ~key_combo_flag & 1;
+                    }
+                    i += (key_value - ACTION_COMBINE_KEYS_BASE_CODE - 1);
+                    key_combo_flag = 1;
+                    break;
+                }
+
                 if (key_value > 250)
                 {
                     mouse_button_value = (key_value == 253) ? 0x01 : 0x02;
