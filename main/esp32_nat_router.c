@@ -529,7 +529,6 @@ void check_OTA_update(void)
     esp_err_t err = esp_http_client_perform(client);
     if (err == ESP_OK)
     {
-
         // parse the json file
         cJSON *json = cJSON_Parse(rcv_buffer);
         if (json == NULL)

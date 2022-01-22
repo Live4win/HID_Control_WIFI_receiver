@@ -61,10 +61,11 @@ app_control_special_script_t *
 };
 
 // LOCAL FUNCTION DEFINITIONS
+// ALL THE FUNCTIONS MUST A HAVE A STATIC RETURN CODE DEFINED!
 
 static void type_and_connect_meeting(void *pData)
 {
-    uint8_t returnCode = SPECIAL_ACTION_RETURN_CODE_OK;
+    static uint8_t returnCode = SPECIAL_ACTION_RETURN_CODE_OK; // MUST BE STATIC
     app_control_special_script_t *received = (app_control_special_script_t *)pData;
 
     uint16_t hid_id = (uint16_t)received->hid_conn_id;
@@ -87,7 +88,7 @@ static void type_and_connect_meeting(void *pData)
 
 static void type_and_connect_meeting2(void *pData)
 {
-    uint8_t returnCode = SPECIAL_ACTION_RETURN_CODE_OK;
+    static uint8_t returnCode = SPECIAL_ACTION_RETURN_CODE_OK; // MUST BE STATIC
 
     app_control_special_script_t *received = (app_control_special_script_t *)pData;
 
