@@ -47,12 +47,12 @@
 
 #define FIRMWARE_VERSION 0.82
 #define UPDATE_OTA_JSON_URL "https://github.com/Live4win/HID_Control_WIFI_receiver/raw/main/OTA_info.json"
+//https://github.com/Live4win/HID_Control_WIFI_receiver/releases/latest/download/OTA_info.json"
 #define UPDATE_MAX_RETRIES 3
 
 // server certificates
 extern const char server_cert_pem_start[] asm("_binary_certs_pem_start");
 extern const char server_cert_pem_end[] asm("_binary_certs_pem_end");
-
 // Function prototypes for the OTA functionality
 void check_OTA_update(void);
 
@@ -535,7 +535,7 @@ void check_OTA_update(void)
             printf("downloaded file is not a valid json, aborting...\n");
         else
         {
-            cJSON *version = cJSON_GetObjectItemCaseSensitive(json, "latest_version");
+            cJSON *version = cJSON_GetObjectItemCaseSensitive(json, "latestVersion");
             cJSON *file = cJSON_GetObjectItemCaseSensitive(json, "file");
 
             // check the version
