@@ -83,7 +83,7 @@ static void type_and_connect_meeting(void *pData)
     free(meeting_id);
     free(meeting_passcode);
 
-    received->returnCode = returnCode;
+    received->returnCode = &returnCode;
 }
 
 static void type_and_connect_meeting2(void *pData)
@@ -98,7 +98,7 @@ static void type_and_connect_meeting2(void *pData)
     printf("%s, %s\n", meeting_id, meeting_passcode);
     printf("DoSFDSDFSDFSne!\n");
 
-    received->returnCode = returnCode;
+    received->returnCode = &returnCode;
 }
 
 // zoom pc special scripts functions

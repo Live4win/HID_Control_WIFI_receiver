@@ -47,7 +47,7 @@
 
 #define FIRMWARE_VERSION 0.82
 #define UPDATE_OTA_JSON_URL "https://github.com/Live4win/HID_Control_WIFI_receiver/raw/main/OTA_info.json"
-//https://github.com/Live4win/HID_Control_WIFI_receiver/releases/latest/download/OTA_info.json"
+//#define UPDATE_OTA_JSON_URL "https://github.com/Live4win/HID_Control_WIFI_receiver/releases/latest/download/OTA_info.json"
 #define UPDATE_MAX_RETRIES 3
 
 // server certificates
@@ -501,7 +501,8 @@ esp_err_t _http_event_handler(esp_http_client_event_t *evt)
     case HTTP_EVENT_ON_DATA:
         if (!esp_http_client_is_chunked_response(evt->client))
         {
-            strncpy(rcv_buffer, (char *)evt->data, evt->data_len);
+            //strncpy(rcv_buffer, (char *)evt->data, evt->data_len);
+            memcpy(rcv_buffer, /*(char *)*/ evt->data, evt->data_len);
         }
         break;
     case HTTP_EVENT_ON_FINISH:

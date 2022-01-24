@@ -343,8 +343,6 @@ void hid_demo_task(void *pvParameters)
                 app_control_special_actions[user_app_selection][key_value]
                     .pfunction(&app_control_special_actions[user_app_selection][key_value]);
 
-                // TODO: CHECK RETURN CODE HERE IN ORDER TO SET i VALUE IF NECESSARY
-                // TODO: fix the retreival of the return code here
                 switch (app_control_special_actions[user_app_selection][key_value].returnCode[0])
                 {
                 case SPECIAL_ACTION_RETURN_CODE_END_SCRIPT:
