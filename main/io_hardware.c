@@ -20,7 +20,7 @@
 #include "ws2812.h"
 
 /**
- * Brief:
+ * Brief: (outdated)
  * This test code shows how to configure gpio and how to use gpio interrupt.
  *
  * GPIO status:
@@ -46,7 +46,7 @@ uint8_t io_hardware_notify_data[5] = {0x00, 0x00, 0x00, 0x00, 0x00};
 spi_device_handle_t spi;
 
 static volatile uint8_t io_hardware_input_digital[GPIO_INPUT_NUMBER][2] = {
-    {GPIO_INPUT_IO_0, 0}, // {GPIO_NUMBER, STATE}
+    {GPIO_INPUT_IO_0, 0}, // {GPIO_NUMBER, STATE, PREVIOUS_STATE}
     {GPIO_INPUT_IO_1, 0},
     {GPIO_INPUT_IO_2, 0},
     {GPIO_INPUT_IO_3, 0},
@@ -54,17 +54,7 @@ static volatile uint8_t io_hardware_input_digital[GPIO_INPUT_NUMBER][2] = {
     //{GPIO_INPUT_IO_5, 0}
 };
 
-/* trying to use ws2812-like rgb leds.. 
-static uint8_t led_states[7] = { // the first led is either on or off
-    LED_STATE_OFF,
-    LED_STATE_OFF,
-    LED_STATE_OFF,
-    LED_STATE_OFF,
-    LED_STATE_OFF,
-    LED_STATE_OFF,
-    LED_STATE_OFF
-};
-*/
+//static volatile uint8_t io_hardware_input_digital_previous[GPIO_INPUT_NUMBER] = {0};
 
 rgbVal *pixels; // 7 leds
 uint32_t pixels_states[NUMBER_OF_LEDS] = {
@@ -109,7 +99,7 @@ static void gpio_task_example(void *arg)
         if (xQueueReceive(gpio_evt_queue, &io_num, 0))
         {
             //printf("GPIO[%d] intr, val: %d\n", io_num, gpio_get_level(io_num)&1);
-
+            //vTaskDelay((10) / portTICK_RATE_MS); // lil bit of debounce lol
             level_detected = gpio_get_level(io_num);
             printf("level detected: %d, GPIO_NUM: %d\n", level_detected, io_num);
 
@@ -132,7 +122,7 @@ static void gpio_task_example(void *arg)
         if (xQueueReceive(io_hardware_get_queue(), &notify_code_received,
                           0))
         {
-            //printf("Color received! 0x%06x\n", rgb(notify_code_received[2], notify_code_received[3], notify_code_received[4]));
+            //printf("Color received! 0x%06x\n", RGB(notify_code_received[2], notify_code_received[3], notify_code_received[4]));
 
             if ((notify_code_received[0]) == IO_HARDWARE_NOTIFY_BLE_DISCONNECT)
             {
@@ -145,13 +135,13 @@ static void gpio_task_example(void *arg)
                 xTimerStop(led_blink_timer, 0);
                 led_blink_activated = 0;
                 set_led_state(notify_code_received[1],
-                              rgb(notify_code_received[2], notify_code_received[3], notify_code_received[4]));
+                              RGB(notify_code_received[2], notify_code_received[3], notify_code_received[4]));
                 printf("BLE led blink stopped!\n");
             }
             else
             {
                 set_led_state(notify_code_received[1],
-                              rgb(notify_code_received[2], notify_code_received[3], notify_code_received[4]));
+                              RGB(notify_code_received[2], notify_code_received[3], notify_code_received[4]));
                 printf("BLE led set to connected!\n");
             }
         }
@@ -354,7 +344,7 @@ static void led_blink_timer_callback(TimerHandle_t pxTimer)
     if (!led_current_state)
     {
         set_led_state(notify_code_received[1],
-                      rgb(notify_code_received[2], notify_code_received[3], notify_code_received[4]));
+                      RGB(notify_code_received[2], notify_code_received[3], notify_code_received[4]));
 
         led_current_state = 1;
     }
@@ -403,18 +393,18 @@ static void ws2812_setRGBValue(rgbVal *pixel_to_set, uint8_t r, uint8_t g, uint8
     (*pixel_to_set).g = r; // yeah.. but it works like this for some reason
 }
 
-uint32_t rgb(uint8_t r, uint8_t g, uint8_t b)
+/*uint32_t RGB(uint8_t r, uint8_t g, uint8_t b)
 {
 
     uint32_t result;
 
     result = (uint32_t)((r << 16) | (g << 8) | (b));
-    //printf("rgb value: %d\n", result);
+    //printf("RGB value: %d\n", result);
 
     return result;
-}
-
-uint32_t rbg_with_brightness(uint8_t r, uint8_t g, uint8_t b, uint8_t brightness)
+}*/
+/*
+uint32_t RGB_WITH_BRIGHTNESS(uint8_t r, uint8_t g, uint8_t b, uint8_t brightness)
 {
 
     float newRed, newGreen, newBlue;
@@ -426,5 +416,5 @@ uint32_t rbg_with_brightness(uint8_t r, uint8_t g, uint8_t b, uint8_t brightness
     // for debugging
     //printf("%d | %d | %d\n", (int)newRed, (int)newGreen, (int)newBlue);
 
-    return rgb((uint8_t)newRed, (uint8_t)newGreen, (uint8_t)newBlue);
-}
+    return RGB((uint8_t)newRed, (uint8_t)newGreen, (uint8_t)newBlue);
+}*/

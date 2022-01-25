@@ -121,47 +121,73 @@ app_control_struct_t *app_control_registered[CONTROL_SCRIPTS_SETS];
 
 // Global variable that relations the app_control implementation
 // with the I/O hardare management
-uint8_t app_control_io_hardware_scripts[CONTROL_SCRIPTS_SETS][GPIO_INPUT_NUMBER][2] =
+// only the first button (GPIO_INPUT_IO_0) is not used for triggering a script
+// because it will be used to switch between functioning modes
+uint8_t app_control_io_hardware_scripts[CONTROL_SCRIPTS_SETS][GPIO_INPUT_NUMBER - 1][2] =
     {
         {
             // Zoom control mobile
-            {GPIO_INPUT_IO_0, ZOOM_CONTROL_MOBILE_TOGGLE_MIC},
-            {GPIO_INPUT_IO_1, ZOOM_CONTROL_MOBILE_TOGGLE_VID},
-            {GPIO_INPUT_IO_2, ZOOM_CONTROL_MOBILE_JOIN1},
-            {GPIO_INPUT_IO_3, ZOOM_CONTROL_MOBILE_OPEN_APP},
-            {GPIO_INPUT_IO_4, ZOOM_CONTROL_MOBILE_STILL_DECIDING},
+            {GPIO_INPUT_IO_1, ZOOM_CONTROL_MOBILE_TOGGLE_MIC},
+            {GPIO_INPUT_IO_2, ZOOM_CONTROL_MOBILE_TOGGLE_VID},
+            {GPIO_INPUT_IO_3, ZOOM_CONTROL_MOBILE_JOIN1},
+            {GPIO_INPUT_IO_4, ZOOM_CONTROL_MOBILE_OPEN_APP},
+            //{GPIO_INPUT_IO_4, ZOOM_CONTROL_MOBILE_STILL_DECIDING},
             //{GPIO_INPUT_IO_5, ZOOM_CONTROL_MOBILE_STILL_DECIDING}
         },
 
         {
             // Zoom control pc
-            {GPIO_INPUT_IO_0, ZOOM_CONTROL_PC_TOGGLE_MIC},
-            {GPIO_INPUT_IO_1, ZOOM_CONTROL_PC_TOGGLE_VID},
-            {GPIO_INPUT_IO_2, ZOOM_CONTROL_PC_IMPROV_VID},
-            {GPIO_INPUT_IO_3, ZOOM_CONTROL_PC_OPEN_APP},
-            {GPIO_INPUT_IO_4, ZOOM_CONTROL_PC_STILL_DECIDING},
+            {GPIO_INPUT_IO_1, ZOOM_CONTROL_PC_TOGGLE_MIC},
+            {GPIO_INPUT_IO_2, ZOOM_CONTROL_PC_TOGGLE_VID},
+            {GPIO_INPUT_IO_3, ZOOM_CONTROL_PC_IMPROV_VID},
+            {GPIO_INPUT_IO_4, ZOOM_CONTROL_PC_OPEN_APP},
+            //{GPIO_INPUT_IO_4, ZOOM_CONTROL_PC_STILL_DECIDING},
             //{GPIO_INPUT_IO_5, ZOOM_CONTROL_PC_STILL_DECIDING}
         },
 
         {
             // Skype control mobile
-            {GPIO_INPUT_IO_0, SKYPE_CONTROL_MOBILE_TOGGLE_MIC},
-            {GPIO_INPUT_IO_1, SKYPE_CONTROL_MOBILE_TOGGLE_VID},
-            {GPIO_INPUT_IO_2, SKYPE_CONTROL_MOBILE_IMPROV_VID},
-            {GPIO_INPUT_IO_3, SKYPE_CONTROL_MOBILE_OPEN_APP},
-            {GPIO_INPUT_IO_4, SKYPE_CONTROL_MOBILE_STILL_DECIDING},
+            {GPIO_INPUT_IO_1, SKYPE_CONTROL_MOBILE_TOGGLE_MIC},
+            {GPIO_INPUT_IO_2, SKYPE_CONTROL_MOBILE_TOGGLE_VID},
+            {GPIO_INPUT_IO_3, SKYPE_CONTROL_MOBILE_IMPROV_VID},
+            {GPIO_INPUT_IO_4, SKYPE_CONTROL_MOBILE_OPEN_APP},
+            //{GPIO_INPUT_IO_4, SKYPE_CONTROL_MOBILE_STILL_DECIDING},
             //{GPIO_INPUT_IO_5, SKYPE_CONTROL_MOBILE_STILL_DECIDING}
         },
 
         {
             // Skype control pc
-            {GPIO_INPUT_IO_0, SKYPE_CONTROL_PC_TOGGLE_MIC},
-            {GPIO_INPUT_IO_1, SKYPE_CONTROL_PC_TOGGLE_VID},
-            {GPIO_INPUT_IO_2, SKYPE_CONTROL_PC_IMPROV_VID},
-            {GPIO_INPUT_IO_3, SKYPE_CONTROL_PC_OPEN_APP},
-            {GPIO_INPUT_IO_4, SKYPE_CONTROL_PC_STILL_DECIDING},
+            {GPIO_INPUT_IO_1, SKYPE_CONTROL_PC_TOGGLE_MIC},
+            {GPIO_INPUT_IO_2, SKYPE_CONTROL_PC_TOGGLE_VID},
+            {GPIO_INPUT_IO_3, SKYPE_CONTROL_PC_IMPROV_VID},
+            {GPIO_INPUT_IO_4, SKYPE_CONTROL_PC_OPEN_APP},
+            //{GPIO_INPUT_IO_4, SKYPE_CONTROL_PC_STILL_DECIDING},
             //{GPIO_INPUT_IO_5, SKYPE_CONTROL_PC_STILL_DECIDING}
         }};
+
+uint32_t app_control_rgb_codes[CONTROL_SCRIPTS_SETS];
+
+bool button_input_as_latch(uint8_t button_index)
+{
+    static uint8_t button_inputs_previous[GPIO_INPUT_NUMBER] = {0};
+    static uint8_t **button_inputs; // matrix where the current inputs values are stored
+    uint8_t i = button_index;
+
+    button_inputs = io_hardware_get_digital_inputs();
+
+    if (button_inputs[i][1] == 1)
+    {
+        if (button_inputs_previous[i] == 0) // update previous value only if different than the current
+        {
+            button_inputs_previous[i] = 1;
+            return true;
+        }
+    }
+    else if (button_inputs_previous[i] == 1)
+        button_inputs_previous[i] = 0;
+
+    return false;
+}
 
 static void hidd_event_callback(esp_hidd_cb_event_t event, esp_hidd_cb_param_t *param)
 {
@@ -277,50 +303,52 @@ void hid_demo_task(void *pvParameters)
     uint8_t result;                     // for debugging
     uint8_t user_app_selection = 0;     // default app selection value
     uint8_t user_command_selection = 1; // default command selection value
-    uint8_t **button_inputs;            // variable where the current inputs values are stored
+
     uint8_t command_selected = 0;
     uint8_t mouse_button_value = 0;
     uint8_t i, k;
+    app_control_rgb_codes[0] = LED_STATE_BLUE;   // ZOOM MOBILE
+    app_control_rgb_codes[1] = LED_STATE_CYAN;   // ZOOM PC
+    app_control_rgb_codes[2] = LED_STATE_YELLOW; // SKYPE MOBILE
+    app_control_rgb_codes[3] = LED_STATE_RED;    // SKYPE PC
 
     while (1)
     {
 
         printf("hid_task is executing!\n");
+        set_led_state(IO_HARDWARE_APP_LED, app_control_rgb_codes[user_app_selection]);
         //vTaskDelay(1000);
         while (!command_selected)
         {
             vTaskDelay(10); // put this to let other tasks run correctly
 
-            // check if should notify the io related task of something..
-            /*if(notify_result != prev_notify_result){
-                result = xQueueSend(io_hardware_get_queue(), &notify_result, 0);
-                printf("notifying hardware.. result: %d\n", result);
-                prev_notify_result = notify_result;
-            }*/
-
-            button_inputs = io_hardware_get_digital_inputs();
-            /*printf("Printing input matrix..\n");
-            for(i = 0; i < GPIO_INPUT_NUMBER; i++){
-                printf("GPIO NUMBER: %d, STATE DETECTED: %d\n", 
-                        (int)button_inputs[i][0], (int)button_inputs[i][1]);
-            }*/
-
             // check all GPIO
             for (i = 0; i < GPIO_INPUT_NUMBER; i++)
             {
-
-                if (button_inputs[i][1] == 1)
-                { // if a specific button is pressed
+                //TODO: put a validating function in the if statement
+                if (button_input_as_latch(i))
+                { // if a button is pressed
                     user_command_selection = (app_control_io_hardware_scripts[user_app_selection][i][1]);
-                    i = GPIO_INPUT_NUMBER; // end the for loop
                     command_selected = 1;
                     printf("Command Found!\n");
+
+                    if (i == 0) // the first button will not trigger any script
+                    {
+                        command_selected = 0;
+                        printf("Changing app control selection!\n");
+                        user_app_selection = ((user_app_selection + 1) >= CONTROL_SCRIPTS_SETS) ? 0 : user_app_selection + 1;
+                        set_led_state(IO_HARDWARE_APP_LED, app_control_rgb_codes[user_app_selection]);
+                    }
+
+                    i = GPIO_INPUT_NUMBER; // end the for loop
                 }
             }
         }
 
         uint8_t key_value = 0;
-        uint8_t key_combo_flag = 1; // 1 must be the default value
+        uint8_t key_combination_current_value;
+        uint8_t key_comb_mask = 0x00; // key combination mask
+        uint8_t key_combo_flag = 1;   // 1 must be the default value
 
         for (i = 1;
              i < app_control_registered[user_app_selection]->scripts_max_steps;
@@ -366,14 +394,48 @@ void hid_demo_task(void *pvParameters)
                 if ((int)(key_value / 10) == (ACTION_COMBINE_KEYS_BASE_CODE / 10))
                 {
                     i++;
+                    printf("i: %d, keyvalue: %d, no. of actions: %d\n", i, key_value, key_value - ACTION_COMBINE_KEYS_BASE_CODE);
+
                     for (int kj = 0; kj < 2; kj++)
                     {
                         for (int j = 0; j < (key_value - ACTION_COMBINE_KEYS_BASE_CODE); j++)
                         {
+                            key_combination_current_value = app_control_registered[user_app_selection]->scripts[user_command_selection][i + j];
+                            switch (key_combination_current_value)
+                            {
+                            case HID_KEY_RIGHT_ALT:
+                                key_comb_mask = (key_combo_flag) ? (key_comb_mask | RIGHT_ALT_KEY_MASK) : (key_comb_mask & ~RIGHT_ALT_KEY_MASK);
+                                break;
+                            case HID_KEY_LEFT_ALT:
+                                key_comb_mask = (key_combo_flag) ? (key_comb_mask | LEFT_ALT_KEY_MASK) : (key_comb_mask & ~LEFT_ALT_KEY_MASK);
+                                break;
+                            case HID_KEY_RIGHT_CTRL:
+                                key_comb_mask = (key_combo_flag) ? (key_comb_mask | RIGHT_CONTROL_KEY_MASK) : (key_comb_mask & ~RIGHT_CONTROL_KEY_MASK);
+                                break;
+                            case HID_KEY_LEFT_CTRL:
+                                key_comb_mask = (key_combo_flag) ? (key_comb_mask | LEFT_CONTROL_KEY_MASK) : (key_comb_mask & ~LEFT_CONTROL_KEY_MASK);
+                                break;
+                            case HID_KEY_RIGHT_GUI:
+                                key_comb_mask = (key_combo_flag) ? (key_comb_mask | RIGHT_GUI_KEY_MASK) : (key_comb_mask & ~RIGHT_GUI_KEY_MASK);
+                                break;
+                            case HID_KEY_LEFT_GUI:
+                                key_comb_mask = (key_combo_flag) ? (key_comb_mask | LEFT_GUI_KEY_MASK) : (key_comb_mask & ~LEFT_GUI_KEY_MASK);
+                                break;
+                            case HID_KEY_RIGHT_SHIFT:
+                                key_comb_mask = (key_combo_flag) ? (key_comb_mask | RIGHT_SHIFT_KEY_MASK) : (key_comb_mask & ~RIGHT_SHIFT_KEY_MASK);
+                                break;
+                            case HID_KEY_LEFT_SHIFT:
+                                key_comb_mask = (key_combo_flag) ? (key_comb_mask | LEFT_SHIFT_KEY_MASK) : (key_comb_mask & ~LEFT_SHIFT_KEY_MASK);
+                                break;
+
+                            default:
+                                break;
+                            }
                             esp_hidd_send_keyboard_value(
-                                hid_conn_id, 0,
-                                app_control_registered[user_app_selection]->scripts[user_command_selection][i + j], key_combo_flag);
-                            vTaskDelay(100 / portTICK_PERIOD_MS);
+                                hid_conn_id, key_comb_mask,
+                                &(app_control_registered[user_app_selection]->scripts[user_command_selection][i + j]), key_combo_flag);
+                            printf("hid value: %d, state: %d\n", app_control_registered[user_app_selection]->scripts[user_command_selection][i + j], key_combo_flag);
+                            vTaskDelay(10 / portTICK_PERIOD_MS);
                         }
                         key_combo_flag = ~key_combo_flag & 1;
                     }
@@ -401,7 +463,7 @@ void hid_demo_task(void *pvParameters)
             }
 
             command_selected = 0;
-            vTaskDelay(500 / portTICK_PERIOD_MS);
+            //vTaskDelay(10 / portTICK_PERIOD_MS);
         }
     }
 }

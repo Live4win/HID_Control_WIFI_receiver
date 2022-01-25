@@ -36,21 +36,29 @@ extern "C"
 
 #define NUMBER_OF_LEDS 7
 
+#define RGB(r, g, b) (uint32_t)(((uint8_t)r << 16) | ((uint8_t)g << 8) | ((uint8_t)b))
+#define RGB_WITH_BRIGHTNESS(r, g, b, brightness) \
+    RGB(                                         \
+        (uint8_t)(r * (float)brightness / 100),  \
+        (uint8_t)(g * (float)brightness / 100),  \
+        (uint8_t)(b * (float)brightness / 100))
+
 // All with 15% brightness for now (otherwise they're too bright)
-#define LED_STATE_OFF rbg_with_brightness(0, 0, 0, 15)
-#define LED_STATE_RED rbg_with_brightness(255, 0, 0, 15)
-#define LED_STATE_GREEN rbg_with_brightness(0, 255, 0, 15)
-#define LED_STATE_BLUE rbg_with_brightness(0, 0, 255, 15)
-#define LED_STATE_YELLOW rbg_with_brightness(255, 255, 0, 15)
-#define LED_STATE_CYAN rbg_with_brightness(0, 255, 255, 15)
-#define LED_STATE_GREY rbg_with_brightness(128, 128, 128, 15)
-#define LED_STATE_WHITE rbg_with_brightness(255, 255, 255, 15)
-#define LED_SPECIAL_STATE_ON rbg_with_brightness(255, 255, 255, 15)
-#define LED_SPECIAL_STATE_OFF rbg_with_brightness(0, 0, 0, 100)
+#define LED_STATE_OFF RGB_WITH_BRIGHTNESS(0, 0, 0, 15)
+#define LED_STATE_RED RGB_WITH_BRIGHTNESS(255, 0, 0, 15)
+#define LED_STATE_GREEN RGB_WITH_BRIGHTNESS(0, 255, 0, 15)
+#define LED_STATE_BLUE RGB_WITH_BRIGHTNESS(0, 0, 255, 15)
+#define LED_STATE_YELLOW RGB_WITH_BRIGHTNESS(255, 255, 0, 15)
+#define LED_STATE_CYAN RGB_WITH_BRIGHTNESS(0, 255, 255, 15)
+#define LED_STATE_GREY RGB_WITH_BRIGHTNESS(128, 128, 128, 15)
+#define LED_STATE_WHITE RGB_WITH_BRIGHTNESS(255, 255, 255, 15)
+#define LED_SPECIAL_STATE_ON RGB_WITH_BRIGHTNESS(255, 255, 255, 15)
+#define LED_SPECIAL_STATE_OFF RGB_WITH_BRIGHTNESS(0, 0, 0, 100)
 
 // Set blinking period for blinking activties
 #define LED_BLINK_PERIOD_MS 500
 
+#define IO_HARDWARE_APP_LED 0
 #define IO_HARDWARE_WIFI_LED 5
 #define IO_HARDWARE_BLE_LED 6
 
@@ -71,8 +79,8 @@ extern "C"
     xQueueHandle io_hardware_get_queue(void);
     uint8_t **io_hardware_get_digital_inputs(void);
     void set_led_state(uint8_t led_number, uint32_t led_state_code);
-    uint32_t rgb(uint8_t r, uint8_t g, uint8_t b);
-    uint32_t rbg_with_brightness(uint8_t r, uint8_t g, uint8_t b, uint8_t brightness);
+    //uint32_t rgb(uint8_t r, uint8_t g, uint8_t b);
+    //uint32_t RGB_WITH_BRIGHTNESS(uint8_t r, uint8_t g, uint8_t b, uint8_t brightness);
 
 #ifdef __cplusplus
 }
