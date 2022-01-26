@@ -58,7 +58,16 @@ extern "C"
 // Set blinking period for blinking activties
 #define LED_BLINK_PERIOD_MS 500
 
+// LED ASSOCIATED TO APP CONTROL SWITCH
 #define IO_HARDWARE_APP_LED 0
+
+// LEDS ASSOCIATED TO GENERAL PURPOSE SWITCHES ON PCB
+#define IO_HARDWARE_SW2_LED 1
+#define IO_HARDWARE_SW3_LED 2
+#define IO_HARDWARE_SW4_LED 3
+#define IO_HARDWARE_SW5_LED 4
+
+// LEDS ASSOCIATED TO WIFI & BLE STATUS
 #define IO_HARDWARE_WIFI_LED 5
 #define IO_HARDWARE_BLE_LED 6
 
@@ -74,6 +83,10 @@ extern "C"
     // the notify data to send to the io hardware related task
     // ble state, led number, led color
     extern uint8_t io_hardware_notify_data[5];
+
+    // the button-led-color relationship for the 4 butttons (GPIO_INPUT_IO_0 is not used)
+    // (Gpio number, LED number, color state)
+    extern uint32_t io_hardware_buttons_rgbCodes[GPIO_INPUT_NUMBER - 1][2];
 
     void io_hardware_setup();
     xQueueHandle io_hardware_get_queue(void);

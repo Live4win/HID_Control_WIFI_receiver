@@ -43,6 +43,13 @@ static xQueueHandle gpio_evt_queue = NULL;
 //TODO: Must optimize here, only the first byte should be enough
 uint8_t io_hardware_notify_data[5] = {0x00, 0x00, 0x00, 0x00, 0x00};
 
+uint32_t io_hardware_buttons_rgbCodes[GPIO_INPUT_NUMBER - 1][2] = {
+    {IO_HARDWARE_SW2_LED, LED_STATE_GREEN},
+    {IO_HARDWARE_SW3_LED, LED_STATE_GREEN},
+    {IO_HARDWARE_SW4_LED, LED_STATE_GREEN},
+    {IO_HARDWARE_SW5_LED, LED_STATE_GREEN},
+};
+
 spi_device_handle_t spi;
 
 static volatile uint8_t io_hardware_input_digital[GPIO_INPUT_NUMBER][2] = {
@@ -228,6 +235,24 @@ void io_hardware_setup()
                                    (void *)1,
                                    led_blink_timer_callback);
 
+    /*
+
+    io_hardware_buttons_rgbCodes[0][0] = GPIO_INPUT_IO_1;
+    io_hardware_buttons_rgbCodes[0][1] = IO_HARDWARE_SW2_LED;
+    io_hardware_buttons_rgbCodes[0][2] = LED_STATE_GREEN;
+
+    io_hardware_buttons_rgbCodes[1][0] = GPIO_INPUT_IO_2;
+    io_hardware_buttons_rgbCodes[1][1] = IO_HARDWARE_SW3_LED;
+    io_hardware_buttons_rgbCodes[1][2] = LED_STATE_GREEN;
+
+    io_hardware_buttons_rgbCodes[2][0] = GPIO_INPUT_IO_3;
+    io_hardware_buttons_rgbCodes[2][1] = IO_HARDWARE_SW4_LED;
+    io_hardware_buttons_rgbCodes[2][2] = LED_STATE_GREEN;
+
+    io_hardware_buttons_rgbCodes[3][0] = GPIO_INPUT_IO_4;
+    io_hardware_buttons_rgbCodes[3][1] = IO_HARDWARE_SW5_LED;
+    io_hardware_buttons_rgbCodes[3][2] = LED_STATE_GREEN;*/
+
     /* ###################### ATTENTION ##################################
     Don't call vTaskStartScheduler(), this function is called before app_main starts. 
     In fact, app_main runs within a FreeRTOS task already!
@@ -359,20 +384,6 @@ static void led_blink_timer_callback(TimerHandle_t pxTimer)
 
 void set_led_state(uint8_t led_number, uint32_t led_state_code)
 {
-
-    /* (this could work)
-   if(ledsInUse){
-    while(ledsInUse){
-        // wait..
-        printf("leds in use!\n");
-    }
-    ledsInUse = 1;
-   }
-   else {
-       ledsInUse = 1;
-   }
-    */
-
     pixels_states[led_number] = led_state_code;
 
     for (int i = 0; i < NUMBER_OF_LEDS; i++)

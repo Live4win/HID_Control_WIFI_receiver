@@ -336,6 +336,7 @@ void hid_demo_task(void *pvParameters)
 
     uint8_t command_selected = 0;
     uint8_t mouse_button_value = 0;
+    uint8_t gpio_num_detected = 0; // just a starting value;
     uint8_t i, k;
     /*app_control_rgb_codes[0] = LED_STATE_BLUE;   // ZOOM MOBILE
     app_control_rgb_codes[1] = LED_STATE_CYAN;   // ZOOM PC
@@ -358,9 +359,10 @@ void hid_demo_task(void *pvParameters)
                 //TODO: put a validating function in the if statement
                 if (button_input_as_latch(i))
                 { // if a button is pressed
-                    user_command_selection = (app_control_io_hardware_scripts[user_app_selection][i][1]);
+                    user_command_selection = (app_control_io_hardware_scripts[user_app_selection][(i != 0) ? (i - 1) : i][1]);
                     command_selected = 1;
                     printf("Command Found!\n");
+                    gpio_num_detected = i; // save gpio index found
 
                     if (i == 0) // the first button will not trigger any script
                     {
@@ -374,6 +376,12 @@ void hid_demo_task(void *pvParameters)
                 }
             }
         }
+
+        // If the program gets here, it means that a specific command has been selected
+
+        // Turn on the corresponding LED
+        set_led_state(io_hardware_buttons_rgbCodes[gpio_num_detected - 1][0],
+                      io_hardware_buttons_rgbCodes[gpio_num_detected - 1][1]);
 
         uint8_t key_value = 0;
         uint8_t key_combination_current_value;
@@ -495,6 +503,10 @@ void hid_demo_task(void *pvParameters)
             command_selected = 0;
             //vTaskDelay(10 / portTICK_PERIOD_MS);
         }
+
+        // Turn off the corresponding LED
+        set_led_state(io_hardware_buttons_rgbCodes[gpio_num_detected - 1][0],
+                      LED_STATE_OFF);
     }
 }
 
