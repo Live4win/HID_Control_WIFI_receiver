@@ -117,6 +117,8 @@ app_control_struct_t *zoom_control_mobile;
 app_control_struct_t *zoom_control_pc;
 app_control_struct_t *skype_control_mobile;
 app_control_struct_t *skype_control_pc;
+app_control_struct_t *meet_control_mobile;
+app_control_struct_t *meet_control_pc;
 app_control_struct_t *app_control_registered[CONTROL_SCRIPTS_SETS];
 
 // Global variable that relations the app_control implementation
@@ -163,9 +165,37 @@ uint8_t app_control_io_hardware_scripts[CONTROL_SCRIPTS_SETS][GPIO_INPUT_NUMBER 
             {GPIO_INPUT_IO_4, SKYPE_CONTROL_PC_OPEN_APP},
             //{GPIO_INPUT_IO_4, SKYPE_CONTROL_PC_STILL_DECIDING},
             //{GPIO_INPUT_IO_5, SKYPE_CONTROL_PC_STILL_DECIDING}
-        }};
+        },
 
-uint32_t app_control_rgb_codes[CONTROL_SCRIPTS_SETS];
+        {
+            // Google Meet control mobile
+            {GPIO_INPUT_IO_1, MEET_CONTROL_MOBILE_TOGGLE_MIC},
+            {GPIO_INPUT_IO_2, MEET_CONTROL_MOBILE_TOGGLE_VID},
+            {GPIO_INPUT_IO_3, MEET_CONTROL_MOBILE_IMPROV_VID},
+            {GPIO_INPUT_IO_4, MEET_CONTROL_MOBILE_OPEN_APP},
+            //{GPIO_INPUT_IO_4, SKYPE_CONTROL_MOBILE_STILL_DECIDING},
+            //{GPIO_INPUT_IO_5, SKYPE_CONTROL_MOBILE_STILL_DECIDING}
+        },
+
+        {
+            // Google Meet control pc
+            {GPIO_INPUT_IO_1, MEET_CONTROL_PC_TOGGLE_MIC},
+            {GPIO_INPUT_IO_2, MEET_CONTROL_PC_TOGGLE_VID},
+            {GPIO_INPUT_IO_3, MEET_CONTROL_PC_IMPROV_VID},
+            {GPIO_INPUT_IO_4, MEET_CONTROL_PC_OPEN_APP},
+            //{GPIO_INPUT_IO_4, SKYPE_CONTROL_PC_STILL_DECIDING},
+            //{GPIO_INPUT_IO_5, SKYPE_CONTROL_PC_STILL_DECIDING}
+        },
+};
+
+uint32_t app_control_rgb_codes[CONTROL_SCRIPTS_SETS] = {
+    LED_STATE_BLUE,   // ZOOM MOBILE
+    LED_STATE_CYAN,   // ZOOM PC
+    LED_STATE_YELLOW, // SKYPE MOBILE
+    LED_STATE_RED,    // SKYPE PC
+    LED_STATE_GREEN,  // GOOGLE MEET MOBILE
+    LED_STATE_GREY,   // GOOGLE MEET PC
+};
 
 bool button_input_as_latch(uint8_t button_index)
 {
@@ -307,10 +337,10 @@ void hid_demo_task(void *pvParameters)
     uint8_t command_selected = 0;
     uint8_t mouse_button_value = 0;
     uint8_t i, k;
-    app_control_rgb_codes[0] = LED_STATE_BLUE;   // ZOOM MOBILE
+    /*app_control_rgb_codes[0] = LED_STATE_BLUE;   // ZOOM MOBILE
     app_control_rgb_codes[1] = LED_STATE_CYAN;   // ZOOM PC
     app_control_rgb_codes[2] = LED_STATE_YELLOW; // SKYPE MOBILE
-    app_control_rgb_codes[3] = LED_STATE_RED;    // SKYPE PC
+    app_control_rgb_codes[3] = LED_STATE_RED;    // SKYPE PC*/
 
     while (1)
     {
@@ -587,10 +617,32 @@ void app_control_init(app_control_struct_t **app_control_register)
                                              SKYPE_CONTROL_PC_OPEN_APP_SCRIPT,
                                              SKYPE_CONTROL_PC_STILL_DECIDING_SCRIPT);
 
+    meet_control_mobile = app_control_setup_new(MEET_CONTROL_MOBILE_ID,
+                                                MEET_CONTROL_MOBILE_NUM_SCRIPTS,
+                                                MEET_CONTROL_MAX_STEPS,
+
+                                                MEET_CONTROL_MOBILE_TOGGLE_MIC_SCRIPT,
+                                                MEET_CONTROL_MOBILE_TOGGLE_VID_SCRIPT,
+                                                MEET_CONTROL_MOBILE_IMPROV_VID_SCRIPT,
+                                                MEET_CONTROL_MOBILE_OPEN_APP_SCRIPT,
+                                                MEET_CONTROL_MOBILE_STILL_DECIDING_SCRIPT);
+
+    meet_control_pc = app_control_setup_new(MEET_CONTROL_PC_ID,
+                                            MEET_CONTROL_PC_NUM_SCRIPTS,
+                                            MEET_CONTROL_MAX_STEPS,
+
+                                            MEET_CONTROL_PC_TOGGLE_MIC_SCRIPT,
+                                            MEET_CONTROL_PC_TOGGLE_VID_SCRIPT,
+                                            MEET_CONTROL_PC_IMPROV_VID_SCRIPT,
+                                            MEET_CONTROL_PC_OPEN_APP_SCRIPT,
+                                            MEET_CONTROL_PC_STILL_DECIDING_SCRIPT);
+
     app_control_register[0] = zoom_control_mobile;
     app_control_register[1] = zoom_control_pc;
     app_control_register[2] = skype_control_mobile;
     app_control_register[3] = skype_control_pc;
+    app_control_register[4] = meet_control_mobile;
+    app_control_register[5] = meet_control_pc;
 }
 
 app_control_struct_t *app_control_setup_new(uint8_t app_id,

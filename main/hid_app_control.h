@@ -4,6 +4,45 @@
  * applications like ZOOM and Skype.
  * There are a couple of functions which need to be defined
  * in the .c file that's has this header file defined 
+ * 
+ * ########################################################################
+ * ##################### SETUP 'n' NEW APP CONTROL(s) #####################
+ * ########################################################################
+ * 
+ * 0. HERE IN THIS HEADER FILE, WITH THE DEFINES:
+ * 
+ * 1. CONTROL_SCRIPTS_SETS must be updated by adding 'n'
+ * 2. Define 'n' new consecutive IDs with the siffix '_ID'
+ * 3. Define the number of scripts for each 'n', and define the 
+ *    max steps for each script in every 'n' (you can make a shared define)
+ * 4. Define the number of special actions for each 'n'
+ * 5. Add the defined number of special actions to the sum of special actions
+ *    in 'CONTROL_SCRIPTS_SPECIAL_ACTIONS_TOTAL'
+ * 6. If there are, define the special scripts indexes for each 'n'
+ * 7. Near the end of this file, make a typedef enum with the names of the 
+ *    scripts available for each 'n' (eg. zoom_mobile_scripts_names_available_t)
+ * 8. Define ALL the scripts, with the right number of steps. You have to
+ *    follow the scheme found in the other scripts definitions for the
+ *    already present app controls
+ * 
+ * 9. INSIDE THE ble_hidd_demo_main.c FILE!
+ * 
+ * 10. Define 'n' global variables for the app control imlementation (app_control_struct_t *)
+ *     you can define them before the 'app_control_registered' array
+ * 11. Add 'n' arrays of button-script relationships inside the 
+ *     app_control_io_hardware_scripts 3d array
+ * 12. Add 'n' RGB color codes in the app_control_rgb_codes array
+ * 13. Add 'n' initializations of the global variables in step 10 inside the
+ *     app_control_init function definition using the 'app_control_setup_new()'
+ *     function. Remember to put all the correct parameters! See already
+ *     present definitions for reference!
+ * 14. Add 'n' initializations of 'app_control_registered' array elements 
+ *     (mentioned id step 10) by following the correct indexing order after
+ *     the already present initializations
+ * 
+ * 15. Make a final check for all steps, and you should be ready to go :)
+ * 
+ * ##########################################################################
  */
 
 /* 
@@ -33,13 +72,15 @@ extern "C"
     // DEFINES
 
 #define CONTROL_SCRIPTS_MAX_SETS 10
-#define CONTROL_SCRIPTS_SETS 4 // usually 2 for every app
+#define CONTROL_SCRIPTS_SETS 6 // usually 2 for every app
 #define CONTROL_SCRIPTS_NUM_ATTRIBUTES 3
 
 #define ZOOM_CONTROL_MOBILE_ID 0
 #define ZOOM_CONTROL_PC_ID 1
 #define SKYPE_CONTROL_MOBILE_ID 2
 #define SKYPE_CONTROL_PC_ID 3
+#define MEET_CONTROL_MOBILE_ID 4 // Google Meet mobile
+#define MEET_CONTROL_PC_ID 5     // Google Meet PC (browser)
 
 #define ZOOM_CONTROL_MOBILE_NUM_SCRIPTS 5
 #define ZOOM_CONTROL_PC_NUM_SCRIPTS 5
@@ -49,15 +90,26 @@ extern "C"
 #define SKYPE_CONTROL_PC_NUM_SCRIPTS 5
 #define SKYPE_CONTROL_MAX_STEPS 10
 
+#define MEET_CONTROL_MOBILE_NUM_SCRIPTS 5
+#define MEET_CONTROL_PC_NUM_SCRIPTS 5
+#define MEET_CONTROL_MAX_STEPS 10
+
 #define ZOOM_CONTROL_MOBILE_SPECIAL_ACTIONS 2
-#define ZOOM_CONTROL_PC_SPECIAL_ACTIONS 1
+#define ZOOM_CONTROL_PC_SPECIAL_ACTIONS 0
 #define SKYPE_CONTROL_MOBILE_SPECIAL_ACTIONS 0
 #define SKYPE_CONTROL_PC_SPECIAL_ACTIONS 0
+#define MEET_CONTROL_MOBILE_SPECIAL_ACTIONS 0
+#define MEET_CONTROL_PC_SPECIAL_ACTIONS 0
 
 #define CONTROL_SCRIPTS_MAX_SPECIAL_ACTIONS 1
 
-#define CONTROL_SCRIPTS_SPECIAL_ACTIONS_TOTAL \
-    ZOOM_CONTROL_MOBILE_SPECIAL_ACTIONS + ZOOM_CONTROL_PC_SPECIAL_ACTIONS + SKYPE_CONTROL_MOBILE_SPECIAL_ACTIONS + SKYPE_CONTROL_PC_SPECIAL_ACTIONS
+#define CONTROL_SCRIPTS_SPECIAL_ACTIONS_TOTAL  \
+    ZOOM_CONTROL_MOBILE_SPECIAL_ACTIONS +      \
+        ZOOM_CONTROL_PC_SPECIAL_ACTIONS +      \
+        SKYPE_CONTROL_MOBILE_SPECIAL_ACTIONS + \
+        SKYPE_CONTROL_PC_SPECIAL_ACTIONS +     \
+        MEET_CONTROL_MOBILE_SPECIAL_ACTIONS +  \
+        MEET_CONTROL_PC_SPECIAL_ACTIONS
 
 #define ACTION_NONE 0
 #define ACTION_SPECIAL 232
@@ -337,6 +389,138 @@ extern "C"
         ACTION_NONE,                           \
         ACTION_NONE
 
+// Google Meet for mobile scripts
+#define MEET_CONTROL_MOBILE_TOGGLE_MIC_SCRIPT \
+    MEET_CONTROL_MOBILE_TOGGLE_MIC,           \
+        ACTION_NONE,                          \
+        ACTION_NONE,                          \
+        ACTION_NONE,                          \
+        ACTION_NONE,                          \
+        ACTION_NONE,                          \
+        ACTION_NONE,                          \
+        ACTION_NONE,                          \
+        ACTION_NONE,                          \
+        ACTION_NONE,                          \
+        ACTION_NONE
+
+#define MEET_CONTROL_MOBILE_TOGGLE_VID_SCRIPT \
+    MEET_CONTROL_MOBILE_TOGGLE_VID,           \
+        ACTION_NONE,                          \
+        ACTION_NONE,                          \
+        ACTION_NONE,                          \
+        ACTION_NONE,                          \
+        ACTION_NONE,                          \
+        ACTION_NONE,                          \
+        ACTION_NONE,                          \
+        ACTION_NONE,                          \
+        ACTION_NONE,                          \
+        ACTION_NONE
+
+#define MEET_CONTROL_MOBILE_IMPROV_VID_SCRIPT \
+    MEET_CONTROL_MOBILE_IMPROV_VID,           \
+        ACTION_NONE,                          \
+        ACTION_NONE,                          \
+        ACTION_NONE,                          \
+        ACTION_NONE,                          \
+        ACTION_NONE,                          \
+        ACTION_NONE,                          \
+        ACTION_NONE,                          \
+        ACTION_NONE,                          \
+        ACTION_NONE,                          \
+        ACTION_NONE
+
+#define MEET_CONTROL_MOBILE_OPEN_APP_SCRIPT \
+    MEET_CONTROL_MOBILE_OPEN_APP,           \
+        ACTION_NONE,                        \
+        ACTION_NONE,                        \
+        ACTION_NONE,                        \
+        ACTION_NONE,                        \
+        ACTION_NONE,                        \
+        ACTION_NONE,                        \
+        ACTION_NONE,                        \
+        ACTION_NONE,                        \
+        ACTION_NONE,                        \
+        ACTION_NONE
+
+#define MEET_CONTROL_MOBILE_STILL_DECIDING_SCRIPT \
+    MEET_CONTROL_MOBILE_STILL_DECIDING,           \
+        ACTION_NONE,                              \
+        ACTION_NONE,                              \
+        ACTION_NONE,                              \
+        ACTION_NONE,                              \
+        ACTION_NONE,                              \
+        ACTION_NONE,                              \
+        ACTION_NONE,                              \
+        ACTION_NONE,                              \
+        ACTION_NONE,                              \
+        ACTION_NONE
+
+// Google Meet for PC scripts
+#define MEET_CONTROL_PC_TOGGLE_MIC_SCRIPT \
+    MEET_CONTROL_PC_TOGGLE_MIC,           \
+        ACTION_COMBINE_NEXT_KEYS(2),      \
+        HID_KEY_LEFT_CTRL,                \
+        HID_KEY_D,                        \
+        ACTION_NONE,                      \
+        ACTION_NONE,                      \
+        ACTION_NONE,                      \
+        ACTION_NONE,                      \
+        ACTION_NONE,                      \
+        ACTION_NONE,                      \
+        ACTION_NONE
+
+#define MEET_CONTROL_PC_TOGGLE_VID_SCRIPT \
+    MEET_CONTROL_PC_TOGGLE_VID,           \
+        ACTION_COMBINE_NEXT_KEYS(2),      \
+        HID_KEY_LEFT_CTRL,                \
+        HID_KEY_E,                        \
+        ACTION_NONE,                      \
+        ACTION_NONE,                      \
+        ACTION_NONE,                      \
+        ACTION_NONE,                      \
+        ACTION_NONE,                      \
+        ACTION_NONE,                      \
+        ACTION_NONE
+
+#define MEET_CONTROL_PC_IMPROV_VID_SCRIPT \
+    MEET_CONTROL_PC_IMPROV_VID,           \
+        ACTION_NONE,                      \
+        ACTION_NONE,                      \
+        ACTION_NONE,                      \
+        ACTION_NONE,                      \
+        ACTION_NONE,                      \
+        ACTION_NONE,                      \
+        ACTION_NONE,                      \
+        ACTION_NONE,                      \
+        ACTION_NONE,                      \
+        ACTION_NONE
+
+#define MEET_CONTROL_PC_OPEN_APP_SCRIPT \
+    MEET_CONTROL_PC_OPEN_APP,           \
+        ACTION_NONE,                    \
+        ACTION_NONE,                    \
+        ACTION_NONE,                    \
+        ACTION_NONE,                    \
+        ACTION_NONE,                    \
+        ACTION_NONE,                    \
+        ACTION_NONE,                    \
+        ACTION_NONE,                    \
+        ACTION_NONE,                    \
+        ACTION_NONE
+
+#define MEET_CONTROL_PC_STILL_DECIDING_SCRIPT \
+    MEET_CONTROL_PC_STILL_DECIDING,           \
+        ACTION_NONE,                          \
+        ACTION_NONE,                          \
+        ACTION_NONE,                          \
+        ACTION_NONE,                          \
+        ACTION_NONE,                          \
+        ACTION_NONE,                          \
+        ACTION_NONE,                          \
+        ACTION_NONE,                          \
+        ACTION_NONE,                          \
+        ACTION_NONE
+
 // test defines..
 #define MEETING1_ID "12345670"
 #define MEETING1_PASSCODE "coMeValavita"
@@ -398,6 +582,30 @@ extern "C"
         SKYPE_CONTROL_PC_OPEN_APP,
         SKYPE_CONTROL_PC_STILL_DECIDING
     } skype_pc_scripts_names_available_t;
+
+    typedef enum
+    {
+
+        // For Google Meet (mobile)
+        MEET_CONTROL_MOBILE_TOGGLE_MIC,
+        MEET_CONTROL_MOBILE_TOGGLE_VID,
+        MEET_CONTROL_MOBILE_IMPROV_VID,
+        MEET_CONTROL_MOBILE_OPEN_APP,
+        MEET_CONTROL_MOBILE_STILL_DECIDING
+    } meet_mobile_scripts_names_available_t;
+
+    typedef enum
+    {
+
+        // For Google Meet (pc, probably from a browser)
+        MEET_CONTROL_PC_TOGGLE_MIC,
+        MEET_CONTROL_PC_TOGGLE_VID,
+        MEET_CONTROL_PC_IMPROV_VID,
+        MEET_CONTROL_PC_OPEN_APP,
+        MEET_CONTROL_PC_STILL_DECIDING
+    } meet_pc_scripts_names_available_t;
+
+    // WARNING: DO NOT TOUCH THIS TYPEDEF IF NOT SURE!
 
     typedef enum
     {
